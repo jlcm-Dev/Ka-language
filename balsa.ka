@@ -1,0 +1,61 @@
+// ===== Balsa (Ferry Loading) =====
+// Como a linguagem Ka nao tem leitura de stdin nem arrays,
+// os dados de entrada ficam fixos aqui no script.
+
+var limite_m = 50;
+var limite = limite_m * 100; // metros -> cm
+
+var port_left = limite;
+var starboard_left = limite;
+
+var carregados = 0;
+var parou = false;
+
+// Retorna "port", "starboard" ou "none" para um carro de comprimento "tam",
+// dado o estado atual das duas faixas.
+fun decidir(tam) {
+    var cabe_port = tam <= port_left;
+    var cabe_star = tam <= starboard_left;
+
+    if (!cabe_port and !cabe_star) return "none";
+
+    if (cabe_port and cabe_star) {
+        if (port_left <= starboard_left) return "port";
+        return "starboard";
+    }
+
+    if (cabe_port) return "port";
+    return "starboard";
+}
+
+fun processar(tam) {
+    if (parou) return;
+
+    var lado = decidir(tam);
+
+    if (lado == "none") {
+        parou = true;
+        return;
+    }
+
+    if (lado == "port") {
+        port_left = port_left - tam;
+    } else {
+        starboard_left = starboard_left - tam;
+    }
+
+    carregados = carregados + 1;
+    print lado;
+}
+
+// ---- Entrada (comprimentos dos carros, em cm, na ordem da fila) ----
+processar(2500);
+processar(3000);
+processar(1000);
+processar(1000);
+processar(1500);
+processar(700);
+processar(800);
+
+print "----";
+print carregados;
