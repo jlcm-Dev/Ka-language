@@ -11,7 +11,6 @@ enum TokenType {
 
     IDENTIFIER, STRING, NUMBER,
 
-    // Sem CLASS nem SUPER - Ka nao tem sintaxe de classe.
     AND, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
     PRINT, RETURN, THIS, TRUE, VAR, WHILE,
 
