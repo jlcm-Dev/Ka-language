@@ -1,61 +1,121 @@
 // ===== Balsa (Ferry Loading) =====
 // Como a linguagem Ka nao tem leitura de stdin nem arrays,
 // os dados de entrada ficam fixos aqui no script.
+//
+// Esta versao usa tudo que o scanner/parser reconhece ate agora:
+// var (com e sem inicializador), fun com nome e fun anonima, if/else,
+// while, for, blocos, print, return (com e sem valor), literais de
+// objeto, prototipos (__proto__), this, leitura/escrita de propriedades,
+// and/or/!, todas as comparacoes, aritmetica, menos unario e agrupamento.
 
 var limite_m = 50;
 var limite = limite_m * 100; // metros -> cm
 
-var port_left = limite;
-var starboard_left = limite;
+// ---- Prototipo das faixas: metodos compartilhados por port e starboard ----
+var Faixa = {
+    cabe: fun (tam) {
+        return tam <= this.livre;
+    },
+    carregar: fun (tam) {
+        this.livre = this.livre - tam;
+        this.carros = this.carros + 1;
+    },
+    ocupacao: fun () {
+        // porcentagem da faixa que ja esta ocupada
+        return (limite - this.livre) * 100 / limite;
+    }
+};
+
+var port = { nome: "port", livre: limite, carros: 0 };
+port.__proto__ = Faixa;
+
+var starboard = { nome: "starboard", livre: limite, carros: 0 };
+starboard.__proto__ = Faixa;
 
 var carregados = 0;
 var parou = false;
+var ultima; // sem inicializador: comeca como nil
 
-// Retorna "port", "starboard" ou "none" para um carro de comprimento "tam",
-// dado o estado atual das duas faixas.
+// Converte metros em centimetros (funcao anonima guardada numa variavel).
+var em_cm = fun (m) { return m * 100; };
+
+// Retorna a faixa onde o carro de comprimento "tam" deve entrar,
+// ou nil se ele nao couber em nenhuma das duas.
 fun decidir(tam) {
-    var cabe_port = tam <= port_left;
-    var cabe_star = tam <= starboard_left;
+    var cabe_port = port.cabe(tam);
+    var cabe_star = starboard.cabe(tam);
 
-    if (!cabe_port and !cabe_star) return "none";
+    if (!cabe_port and !cabe_star) return nil;
 
     if (cabe_port and cabe_star) {
-        if (port_left <= starboard_left) return "port";
-        return "starboard";
+        if (port.livre <= starboard.livre) return port;
+        return starboard;
     }
 
-    if (cabe_port) return "port";
-    return "starboard";
+    if (cabe_port) return port;
+    return starboard;
 }
 
 fun processar(tam) {
-    if (parou) return;
+    if (parou or tam <= 0) return;
 
-    var lado = decidir(tam);
+    var faixa = decidir(tam);
 
-    if (lado == "none") {
+    if (faixa == nil) {
         parou = true;
         return;
     }
 
-    if (lado == "port") {
-        port_left = port_left - tam;
-    } else {
-        starboard_left = starboard_left - tam;
-    }
-
+    faixa.carregar(tam);
     carregados = carregados + 1;
-    print lado;
+    ultima = faixa;
+    print faixa.nome;
 }
 
-// ---- Entrada (comprimentos dos carros, em cm, na ordem da fila) ----
-processar(2500);
-processar(3000);
-processar(1000);
-processar(1000);
-processar(1500);
-processar(700);
-processar(800);
+// ---- Entrada (comprimentos dos carros, em metros, na ordem da fila) ----
+processar(em_cm(25));
+processar(em_cm(30));
+processar(em_cm(10));
+processar(em_cm(10));
+processar(em_cm(15));
+processar(em_cm(7.5));
+processar(em_cm(8));
 
-print "----";
+// ---- Resumo ----
+var linha = "";
+for (var i = 0; i < 10; i = i + 1) linha = linha + "-";
+print linha;
+
 print carregados;
+
+{
+    // Bloco solto: estas variaveis so existem aqui dentro.
+    var diferenca = port.livre - starboard.livre;
+    if (diferenca < 0) diferenca = -diferenca;
+    print "diferenca entre as faixas (cm):";
+    print diferenca;
+
+    print "ocupacao port (%):";
+    print port.ocupacao();
+    print "ocupacao starboard (%):";
+    print starboard.ocupacao();
+}
+
+// Quantos carros pequenos (5 m) ainda caberiam somando as sobras?
+var sobra = port.livre + starboard.livre;
+var extras = 0;
+while (sobra >= em_cm(5)) {
+    sobra = sobra - em_cm(5);
+    extras = extras + 1;
+}
+
+var mostrar_ultima = true;
+if (mostrar_ultima and ultima != nil and carregados > 0) {
+    print "ultima faixa usada:";
+    print ultima.nome;
+} else {
+    print "nenhum carro embarcou";
+}
+
+print "carros de 5 m que ainda caberiam:";
+print extras;

@@ -10,9 +10,6 @@ import java.util.List;
 
 public class Ka {
     static boolean hadError = false;
-    static boolean hadRuntimeError = false;
-
-    private static final Interpreter interpreter = new Interpreter();
 
     // Banner ASCII (mascote do REPL) - só aparece no modo interativo,
     // nunca ao rodar um arquivo .ka (pra não sujar a saída de scripts).
@@ -81,7 +78,6 @@ public class Ka {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
         if (hadError) System.exit(65);
-        if (hadRuntimeError) System.exit(70);
     }
 
     private static void printBanner() {
@@ -106,7 +102,6 @@ public class Ka {
             if (line == null) break;
             run(line);
             hadError = false;
-            hadRuntimeError = false;
         }
     }
 
@@ -114,17 +109,21 @@ public class Ka {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
+        // Analise lexica: lista de tokens gerada pelo scanner.
+        System.out.println("=== Tokens ===");
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
+
+        // Analise sintatica.
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
 
         if (hadError) return;
 
-        Resolver resolver = new Resolver(interpreter);
-        resolver.resolve(statements);
-
-        if (hadError) return;
-
-        interpreter.interpret(statements);
+        System.out.println("=== Parser ===");
+        System.out.println("Analise sintatica concluida sem erros: "
+            + statements.size() + " declaracao(oes).");
     }
 
     static void error(int line, String message) {
@@ -137,12 +136,6 @@ public class Ka {
         } else {
             report(token.line, " em '" + token.lexeme + "'", message);
         }
-    }
-
-    static void runtimeError(RuntimeError error) {
-        System.err.println(error.getMessage() +
-            "\n[linha " + error.token.line + "]");
-        hadRuntimeError = true;
     }
 
     private static void report(int line, String where, String message) {
