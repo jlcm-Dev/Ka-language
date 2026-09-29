@@ -1,0 +1,25 @@
+var Animal = {};
+
+Animal.falar = fun() {
+  if (this.idade > 2) {
+    print this.nome + " e adulto.";
+  } else {
+    print this.nome + " ainda e filhote.";
+  }
+};
+
+fun novoAnimal(nome, idade) {
+  var obj = Object.create(Animal);
+  obj.nome = nome;
+  obj.idade = idade;
+  return obj;
+}
+
+var bicho = novoAnimal("Bicho", 5);
+bicho.falar();
+
+var i = 0;
+while (i < 3) {
+  print i;
+  i = i + 1;
+}
