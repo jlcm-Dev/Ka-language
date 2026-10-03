@@ -1,0 +1,7 @@
+var x = 10;
+var y = 20;
+var z = x + y;
+var texto = "oi";
+var b = true;
+var n = nil;
+var semInit;

@@ -1,0 +1,2 @@
+var f = fun (a) { return a; };
+fun (b) { print b; }(1);

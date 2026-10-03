@@ -1,0 +1,11 @@
+fun soma(a, b) {
+    return a + b;
+}
+
+fun semParametros() {
+    return 42;
+}
+
+fun semRetorno() {
+    print "nada";
+}

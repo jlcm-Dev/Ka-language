@@ -20,7 +20,7 @@ abstract class Expr {
   }
 
   static class Assign extends Expr {
-    Assign(Token name, Expr value) {
+    Assign(Symbol name, Expr value) {
       this.name = name;
       this.value = value;
     }
@@ -29,12 +29,12 @@ abstract class Expr {
       return visitor.visitAssignExpr(this);
     }
 
-    final Token name;
+    final Symbol name;
     final Expr value;
   }
 
   static class Binary extends Expr {
-    Binary(Expr left, Token operator, Expr right) {
+    Binary(Expr left, Operator operator, Expr right) {
       this.left = left;
       this.operator = operator;
       this.right = right;
@@ -45,12 +45,12 @@ abstract class Expr {
     }
 
     final Expr left;
-    final Token operator;
+    final Operator operator;
     final Expr right;
   }
 
   static class Call extends Expr {
-    Call(Expr callee, Token paren, List<Expr> arguments) {
+    Call(Expr callee, SourceLocation paren, List<Expr> arguments) {
       this.callee = callee;
       this.paren = paren;
       this.arguments = arguments;
@@ -61,12 +61,12 @@ abstract class Expr {
     }
 
     final Expr callee;
-    final Token paren;
+    final SourceLocation paren;
     final List<Expr> arguments;
   }
 
   static class Function extends Expr {
-    Function(List<Token> params, List<Stmt> body) {
+    Function(List<Symbol> params, List<Stmt> body) {
       this.params = params;
       this.body = body;
     }
@@ -75,12 +75,12 @@ abstract class Expr {
       return visitor.visitFunctionExpr(this);
     }
 
-    final List<Token> params;
+    final List<Symbol> params;
     final List<Stmt> body;
   }
 
   static class Get extends Expr {
-    Get(Expr object, Token name) {
+    Get(Expr object, Symbol name) {
       this.object = object;
       this.name = name;
     }
@@ -90,7 +90,7 @@ abstract class Expr {
     }
 
     final Expr object;
-    final Token name;
+    final Symbol name;
   }
 
   static class Grouping extends Expr {
@@ -118,7 +118,7 @@ abstract class Expr {
   }
 
   static class Logical extends Expr {
-    Logical(Expr left, Token operator, Expr right) {
+    Logical(Expr left, Operator operator, Expr right) {
       this.left = left;
       this.operator = operator;
       this.right = right;
@@ -129,12 +129,12 @@ abstract class Expr {
     }
 
     final Expr left;
-    final Token operator;
+    final Operator operator;
     final Expr right;
   }
 
   static class ObjectLiteral extends Expr {
-    ObjectLiteral(List<Token> keys, List<Expr> values) {
+    ObjectLiteral(List<Symbol> keys, List<Expr> values) {
       this.keys = keys;
       this.values = values;
     }
@@ -143,12 +143,12 @@ abstract class Expr {
       return visitor.visitObjectLiteralExpr(this);
     }
 
-    final List<Token> keys;
+    final List<Symbol> keys;
     final List<Expr> values;
   }
 
   static class Set extends Expr {
-    Set(Expr object, Token name, Expr value) {
+    Set(Expr object, Symbol name, Expr value) {
       this.object = object;
       this.name = name;
       this.value = value;
@@ -159,12 +159,12 @@ abstract class Expr {
     }
 
     final Expr object;
-    final Token name;
+    final Symbol name;
     final Expr value;
   }
 
   static class This extends Expr {
-    This(Token keyword) {
+    This(Symbol keyword) {
       this.keyword = keyword;
     }
 
@@ -172,11 +172,11 @@ abstract class Expr {
       return visitor.visitThisExpr(this);
     }
 
-    final Token keyword;
+    final Symbol keyword;
   }
 
   static class Unary extends Expr {
-    Unary(Token operator, Expr right) {
+    Unary(Operator operator, Expr right) {
       this.operator = operator;
       this.right = right;
     }
@@ -185,12 +185,12 @@ abstract class Expr {
       return visitor.visitUnaryExpr(this);
     }
 
-    final Token operator;
+    final Operator operator;
     final Expr right;
   }
 
   static class Variable extends Expr {
-    Variable(Token name) {
+    Variable(Symbol name) {
       this.name = name;
     }
 
@@ -198,7 +198,7 @@ abstract class Expr {
       return visitor.visitVariableExpr(this);
     }
 
-    final Token name;
+    final Symbol name;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

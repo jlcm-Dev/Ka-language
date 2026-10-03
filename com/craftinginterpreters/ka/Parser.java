@@ -28,7 +28,12 @@ class Parser {
     // (sem classDecl - Ka nao tem "class")
     private Stmt declaration() {
         try {
-            if (match(FUN)) return function("function");
+            // "fun nome(...)" e declaracao; "fun (...)" no inicio de um
+            // statement e uma funcao anonima (expressao), entao cai em statement().
+            if (check(FUN) && checkNext(IDENTIFIER)) {
+                advance();
+                return function("funcao");
+            }
             if (match(VAR)) return varDeclaration();
             return statement();
         } catch (ParseError error) {
@@ -38,15 +43,15 @@ class Parser {
     }
 
     private Stmt.Function function(String kind) {
-        Token name = consume(IDENTIFIER, "Esperado o nome da " + kind + ".");
+        Symbol name = new Symbol(consume(IDENTIFIER, "Esperado o nome da " + kind + "."));
         consume(LEFT_PAREN, "Esperado '(' depois do nome da " + kind + ".");
-        List<Token> parameters = new ArrayList<>();
+        List<Symbol> parameters = new ArrayList<>();
         if (!check(RIGHT_PAREN)) {
             do {
                 if (parameters.size() >= 255) {
                     error(peek(), "Uma funcao nao pode ter mais de 255 parametros.");
                 }
-                parameters.add(consume(IDENTIFIER, "Esperado o nome do parametro."));
+                parameters.add(new Symbol(consume(IDENTIFIER, "Esperado o nome do parametro.")));
             } while (match(COMMA));
         }
         consume(RIGHT_PAREN, "Esperado ')' depois dos parametros.");
@@ -59,13 +64,13 @@ class Parser {
     // em posição de EXPRESSÃO (função anônima / lambda).
     private Expr functionExpression() {
         consume(LEFT_PAREN, "Esperado '(' depois de 'fun'.");
-        List<Token> parameters = new ArrayList<>();
+        List<Symbol> parameters = new ArrayList<>();
         if (!check(RIGHT_PAREN)) {
             do {
                 if (parameters.size() >= 255) {
                     error(peek(), "Uma funcao nao pode ter mais de 255 parametros.");
                 }
-                parameters.add(consume(IDENTIFIER, "Esperado o nome do parametro."));
+                parameters.add(new Symbol(consume(IDENTIFIER, "Esperado o nome do parametro.")));
             } while (match(COMMA));
         }
         consume(RIGHT_PAREN, "Esperado ')' depois dos parametros.");
@@ -75,7 +80,7 @@ class Parser {
     }
 
     private Stmt varDeclaration() {
-        Token name = consume(IDENTIFIER, "Esperado o nome da variavel.");
+        Symbol name = new Symbol(consume(IDENTIFIER, "Esperado o nome da variavel."));
         Expr initializer = null;
         if (match(EQUAL)) {
             initializer = expression();
@@ -95,7 +100,7 @@ class Parser {
     }
 
     private Stmt returnStatement() {
-        Token keyword = previous();
+        Symbol keyword = new Symbol(previous());
         Expr value = null;
         if (!check(SEMICOLON)) {
             value = expression();
@@ -189,7 +194,7 @@ class Parser {
             Expr value = assignment();
 
             if (expr instanceof Expr.Variable) {
-                Token name = ((Expr.Variable) expr).name;
+                Symbol name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
             } else if (expr instanceof Expr.Get) {
                 Expr.Get get = (Expr.Get) expr;
@@ -205,7 +210,7 @@ class Parser {
     private Expr or() {
         Expr expr = and();
         while (match(OR)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = and();
             expr = new Expr.Logical(expr, operator, right);
         }
@@ -215,7 +220,7 @@ class Parser {
     private Expr and() {
         Expr expr = equality();
         while (match(AND)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = equality();
             expr = new Expr.Logical(expr, operator, right);
         }
@@ -225,7 +230,7 @@ class Parser {
     private Expr equality() {
         Expr expr = comparison();
         while (match(BANG_EQUAL, EQUAL_EQUAL)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = comparison();
             expr = new Expr.Binary(expr, operator, right);
         }
@@ -235,7 +240,7 @@ class Parser {
     private Expr comparison() {
         Expr expr = term();
         while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = term();
             expr = new Expr.Binary(expr, operator, right);
         }
@@ -245,7 +250,7 @@ class Parser {
     private Expr term() {
         Expr expr = factor();
         while (match(MINUS, PLUS)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = factor();
             expr = new Expr.Binary(expr, operator, right);
         }
@@ -255,7 +260,7 @@ class Parser {
     private Expr factor() {
         Expr expr = unary();
         while (match(SLASH, STAR)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = unary();
             expr = new Expr.Binary(expr, operator, right);
         }
@@ -264,7 +269,7 @@ class Parser {
 
     private Expr unary() {
         if (match(BANG, MINUS)) {
-            Token operator = previous();
+            Operator operator = new Operator(previous());
             Expr right = unary();
             return new Expr.Unary(operator, right);
         }
@@ -277,7 +282,7 @@ class Parser {
             if (match(LEFT_PAREN)) {
                 expr = finishCall(expr);
             } else if (match(DOT)) {
-                Token name = consume(IDENTIFIER, "Esperado o nome da propriedade depois de '.'.");
+                Symbol name = new Symbol(consume(IDENTIFIER, "Esperado o nome da propriedade depois de '.'."));
                 expr = new Expr.Get(expr, name);
             } else {
                 break;
@@ -296,7 +301,8 @@ class Parser {
                 arguments.add(expression());
             } while (match(COMMA));
         }
-        Token paren = consume(RIGHT_PAREN, "Esperado ')' depois dos argumentos.");
+        SourceLocation paren = new SourceLocation(
+            consume(RIGHT_PAREN, "Esperado ')' depois dos argumentos."));
         return new Expr.Call(callee, paren, arguments);
     }
 
@@ -310,7 +316,7 @@ class Parser {
             return new Expr.Literal(previous().literal);
         }
 
-        if (match(THIS)) return new Expr.This(previous());
+        if (match(THIS)) return new Expr.This(new Symbol(previous()));
 
         // Função anônima: "fun (a, b) { ... }" como EXPRESSÃO
         // (diferente de "fun nome(...) {...}" que é statement).
@@ -323,7 +329,7 @@ class Parser {
         if (match(LEFT_BRACE)) return objectLiteral();
 
         if (match(IDENTIFIER)) {
-            return new Expr.Variable(previous());
+            return new Expr.Variable(new Symbol(previous()));
         }
 
         if (match(LEFT_PAREN)) {
@@ -337,12 +343,12 @@ class Parser {
 
     // objectLiteral → "{" ( IDENTIFIER ":" expression ( "," IDENTIFIER ":" expression )* )? "}" ;
     private Expr objectLiteral() {
-        List<Token> keys = new ArrayList<>();
+        List<Symbol> keys = new ArrayList<>();
         List<Expr> values = new ArrayList<>();
 
         if (!check(RIGHT_BRACE)) {
             do {
-                Token key = consume(IDENTIFIER, "Esperado o nome da propriedade.");
+                Symbol key = new Symbol(consume(IDENTIFIER, "Esperado o nome da propriedade."));
                 consume(COLON, "Esperado ':' depois do nome da propriedade.");
                 Expr value = expression();
                 keys.add(key);
@@ -372,6 +378,12 @@ class Parser {
     private boolean check(TokenType type) {
         if (isAtEnd()) return false;
         return peek().type == type;
+    }
+
+    private boolean checkNext(TokenType type) {
+        if (isAtEnd()) return false;
+        if (tokens.get(current + 1).type == EOF) return false;
+        return tokens.get(current + 1).type == type;
     }
 
     private Token advance() {

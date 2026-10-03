@@ -1,0 +1,36 @@
+=== Tokens ===
+FUN fun null
+IDENTIFIER soma null
+LEFT_PAREN ( null
+IDENTIFIER a null
+COMMA , null
+IDENTIFIER b null
+RIGHT_PAREN ) null
+LEFT_BRACE { null
+RETURN return null
+IDENTIFIER a null
+PLUS + null
+IDENTIFIER b null
+SEMICOLON ; null
+RIGHT_BRACE } null
+FUN fun null
+IDENTIFIER semParametros null
+LEFT_PAREN ( null
+RIGHT_PAREN ) null
+LEFT_BRACE { null
+RETURN return null
+NUMBER 42 42.0
+SEMICOLON ; null
+RIGHT_BRACE } null
+FUN fun null
+IDENTIFIER semRetorno null
+LEFT_PAREN ( null
+RIGHT_PAREN ) null
+LEFT_BRACE { null
+PRINT print null
+STRING "nada" nada
+SEMICOLON ; null
+RIGHT_BRACE } null
+EOF  null
+=== Parser ===
+Analise sintatica concluida sem erros: 3 declaracao(oes).

@@ -1,0 +1,6 @@
+[linha 2] Erro: String nao foi fechada (faltou aspas).
+=== Tokens ===
+VAR var null
+IDENTIFIER s null
+EQUAL = null
+EOF  null

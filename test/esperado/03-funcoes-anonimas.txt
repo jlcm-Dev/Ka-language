@@ -1,0 +1,37 @@
+=== Tokens ===
+VAR var null
+IDENTIFIER f null
+EQUAL = null
+FUN fun null
+LEFT_PAREN ( null
+IDENTIFIER a null
+COMMA , null
+IDENTIFIER b null
+RIGHT_PAREN ) null
+LEFT_BRACE { null
+RETURN return null
+IDENTIFIER a null
+PLUS + null
+IDENTIFIER b null
+SEMICOLON ; null
+RIGHT_BRACE } null
+SEMICOLON ; null
+VAR var null
+IDENTIFIER proto null
+EQUAL = null
+LEFT_BRACE { null
+IDENTIFIER falar null
+COLON : null
+FUN fun null
+LEFT_PAREN ( null
+RIGHT_PAREN ) null
+LEFT_BRACE { null
+PRINT print null
+STRING "oi" oi
+SEMICOLON ; null
+RIGHT_BRACE } null
+RIGHT_BRACE } null
+SEMICOLON ; null
+EOF  null
+=== Parser ===
+Analise sintatica concluida sem erros: 2 declaracao(oes).

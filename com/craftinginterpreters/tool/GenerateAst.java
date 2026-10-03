@@ -10,29 +10,29 @@ public class GenerateAst {
         String outputDir = "com/craftinginterpreters/ka";
 
         defineAst(outputDir, "Expr", Arrays.asList(
-            "Assign        : Token name, Expr value",
-            "Binary        : Expr left, Token operator, Expr right",
-            "Call          : Expr callee, Token paren, List<Expr> arguments",
-            "Function      : List<Token> params, List<Stmt> body",
-            "Get           : Expr object, Token name",
+            "Assign        : Symbol name, Expr value",
+            "Binary        : Expr left, Operator operator, Expr right",
+            "Call          : Expr callee, SourceLocation paren, List<Expr> arguments",
+            "Function      : List<Symbol> params, List<Stmt> body",
+            "Get           : Expr object, Symbol name",
             "Grouping      : Expr expression",
             "Literal       : Object value",
-            "Logical       : Expr left, Token operator, Expr right",
-            "ObjectLiteral : List<Token> keys, List<Expr> values",
-            "Set           : Expr object, Token name, Expr value",
-            "This          : Token keyword",
-            "Unary         : Token operator, Expr right",
-            "Variable      : Token name"
+            "Logical       : Expr left, Operator operator, Expr right",
+            "ObjectLiteral : List<Symbol> keys, List<Expr> values",
+            "Set           : Expr object, Symbol name, Expr value",
+            "This          : Symbol keyword",
+            "Unary         : Operator operator, Expr right",
+            "Variable      : Symbol name"
         ));
 
         defineAst(outputDir, "Stmt", Arrays.asList(
             "Block      : List<Stmt> statements",
             "Expression : Expr expression",
-            "Function   : Token name, List<Token> params, List<Stmt> body",
+            "Function   : Symbol name, List<Symbol> params, List<Stmt> body",
             "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Print      : Expr expression",
-            "Return     : Token keyword, Expr value",
-            "Var        : Token name, Expr initializer",
+            "Return     : Symbol keyword, Expr value",
+            "Var        : Symbol name, Expr initializer",
             "While      : Expr condition, Stmt body"
         ));
     }

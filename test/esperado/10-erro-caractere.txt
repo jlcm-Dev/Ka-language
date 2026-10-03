@@ -1,0 +1,13 @@
+[linha 2] Erro: Caractere inesperado.
+=== Tokens ===
+VAR var null
+IDENTIFIER x null
+EQUAL = null
+NUMBER 10 10.0
+SEMICOLON ; null
+VAR var null
+IDENTIFIER y null
+EQUAL = null
+NUMBER 20 20.0
+SEMICOLON ; null
+EOF  null

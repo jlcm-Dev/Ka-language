@@ -3,7 +3,7 @@ package com.craftinginterpreters.ka;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -76,7 +76,7 @@ public class Ka {
 
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
-        run(new String(bytes, Charset.defaultCharset()));
+        run(new String(bytes, StandardCharsets.UTF_8));
         if (hadError) System.exit(65);
     }
 
@@ -114,6 +114,10 @@ public class Ka {
         for (Token token : tokens) {
             System.out.println(token);
         }
+
+        // Se o scanner ja achou erro, nao adianta parsear: os tokens estao
+        // incompletos e o parser so geraria erros em cascata.
+        if (hadError) return;
 
         // Analise sintatica.
         Parser parser = new Parser(tokens);

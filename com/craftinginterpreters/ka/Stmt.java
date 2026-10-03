@@ -39,7 +39,7 @@ abstract class Stmt {
   }
 
   static class Function extends Stmt {
-    Function(Token name, List<Token> params, List<Stmt> body) {
+    Function(Symbol name, List<Symbol> params, List<Stmt> body) {
       this.name = name;
       this.params = params;
       this.body = body;
@@ -49,8 +49,8 @@ abstract class Stmt {
       return visitor.visitFunctionStmt(this);
     }
 
-    final Token name;
-    final List<Token> params;
+    final Symbol name;
+    final List<Symbol> params;
     final List<Stmt> body;
   }
 
@@ -83,7 +83,7 @@ abstract class Stmt {
   }
 
   static class Return extends Stmt {
-    Return(Token keyword, Expr value) {
+    Return(Symbol keyword, Expr value) {
       this.keyword = keyword;
       this.value = value;
     }
@@ -92,12 +92,12 @@ abstract class Stmt {
       return visitor.visitReturnStmt(this);
     }
 
-    final Token keyword;
+    final Symbol keyword;
     final Expr value;
   }
 
   static class Var extends Stmt {
-    Var(Token name, Expr initializer) {
+    Var(Symbol name, Expr initializer) {
       this.name = name;
       this.initializer = initializer;
     }
@@ -106,7 +106,7 @@ abstract class Stmt {
       return visitor.visitVarStmt(this);
     }
 
-    final Token name;
+    final Symbol name;
     final Expr initializer;
   }
 

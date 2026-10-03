@@ -1,0 +1,17 @@
+var x = 10;
+
+if (x > 5) {
+    print "maior";
+} else {
+    print "menor";
+}
+
+if (x > 100) print "grande";
+
+if (x > 0) {
+    if (x > 5) {
+        print "positivo grande";
+    } else {
+        print "positivo pequeno";
+    }
+}

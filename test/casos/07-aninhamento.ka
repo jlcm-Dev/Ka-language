@@ -1,0 +1,17 @@
+fun externa() {
+    var x = 1;
+    {
+        var y = 2;
+        {
+            var z = 3;
+        }
+    }
+}
+
+if (true) {
+    if (false) {
+        while (true) {
+            var a = 1;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+=== Tokens ===
+VAR var null
+IDENTIFIER x null
+EQUAL = null
+SEMICOLON ; null
+EOF  null
+[linha 1] Erro em ';': Esperada uma expressao.

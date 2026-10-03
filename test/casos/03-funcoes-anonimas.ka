@@ -1,0 +1,9 @@
+var f = fun(a, b) {
+    return a + b;
+};
+
+var proto = {
+    falar: fun() {
+        print "oi";
+    }
+};

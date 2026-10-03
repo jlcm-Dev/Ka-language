@@ -1,0 +1,6 @@
+var proto = { nome: "proto" };
+var obj = { x: 1, y: 2 };
+var vazio = {};
+
+obj.x = 5;
+var z = obj.x;
